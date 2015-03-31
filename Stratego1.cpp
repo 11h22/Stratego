@@ -6,16 +6,25 @@
 using namespace std;
 
 class Game{
-  int Board[10][10];//0 is water 1 is empty space and 2 is space with unknown piece
+  int Board[10][10];//0 is water 1 is empty space and 2 is space with unknown red piece 3 is space with unknown blue piece
   int Pieces[40];
   int RedPiece[10][10];
   int BluePiece[10][10];
+  int x1;
+  int y1;
+  int x2;
+  int y2;
+  int whoseturn;//1 for red 2 for blue
+  bool end;
 public:
   Game();
   ~Game();
   void Initialize();
   void ShowBoard(bool a, bool b);
   void SetupBoard(bool a, bool b);
+  void Play();
+  void checkifmoveislegal();
+  void movepiece();
 }; 
 Game::Game(){}
 Game::~Game(){
@@ -61,6 +70,13 @@ void Game::Initialize(){
 void Game::ShowBoard(bool a, bool b){
   for (int i=0;i<10;i++){
     for (int j=0;j<10;j++){
+      if (i==0 && j==0){
+	printf("\tCol0\tCol1\tCol2\tCol3\tCol4\tCol5\tCol6\tCol7\tCol8\tCol9\n");
+      }
+      if (j==0){
+	printf("Row %d\t",i);
+      }
+
       if (Board[i][j]==0){
 	printf("W\t");
       }
@@ -71,7 +87,7 @@ void Game::ShowBoard(bool a, bool b){
 	if (RedPiece[i][j]!=0){
 	  printf("%d\t",RedPiece[i][j]);
 	}
-        else if (b==0 && Board[i][j]==2){
+	else if (b==0 && Board[i][j]==2){
 	  printf("D\t");
 	}
       }
@@ -79,7 +95,7 @@ void Game::ShowBoard(bool a, bool b){
 	if (BluePiece[i][j]!=0){
 	  printf("%d\t",BluePiece[i][j]);
 	}
-        else if (a==0 && Board[i][j]==2){
+	else if (a==0 && Board[i][j]==2){
 	  printf("D\t");	
 	}
       }
@@ -88,12 +104,93 @@ void Game::ShowBoard(bool a, bool b){
   }
   printf("\n");
 }
+
 void Game::SetupBoard(bool a, bool b){
-  
+  int x=0;
+  int y=0;
+  int i=0;
+  if (a){
+    while(i<40){
+      printf("Which Row to put %d:", Pieces[i]);
+      scanf("%d",&x);
+      printf("Which Column to put %d:", Pieces[i]);
+      scanf("%d",&y);
+      //check if its legal
+      if (x>3){
+	printf("stick to the top half\n");
+	continue;
+      }
+      if (Board[x][y]!=1){
+	printf("Something is in the way\n");
+	continue;
+      }
+      if (x<0 || x>9 ||y<0||y>9){
+	printf("Off of board\n");
+	continue;
+      }
+      RedPiece[x][y]=Pieces[i];
+      Board[x][y]=3;
+      ShowBoard(1,0);
+      i++;
+    }
+  }
+  x=y=i=0;
+  if (b){
+    while(i<40){
+      printf("Which Row to put %d:", Pieces[i]);
+      scanf("%d",&x);
+      printf("Which Column to put %d:", Pieces[i]);
+      scanf("%d",&y);
+      //check if its legal
+      if (x<6){
+	printf("stick to the top half\n");
+	continue;
+      }
+      if (Board[x][y]!=1){
+	printf("Something is in the way\n");
+	continue;
+      }
+      if (x<0 || x>9 ||y<0||y>9){
+	printf("Off of board\n");
+	continue;
+      }
+      BluePiece[x][y]=Pieces[i];
+      Board[x][y]=4;
+      ShowBoard(0,1);
+      i++;
+    }
+  }
+}
+void Game::Play(){
+  x1=y1=x2=y2=end=0;
+  whoseturn=1;
+  while(end==0){
+    if(whoseturn==1)
+      printf("Red Moves");
+    if(whoseturn==2)
+      printf("Blue Moves");
+    printf("Which Piece to move?\nWhich Row: ");
+    scanf("%d",&x1);
+    printf("Which Column: ");
+    scanf("%d",&y1);
+    printf("To Where?\nWhich Row: ");
+    scanf("%d",&x2);
+    printf("Which Column: ");
+    scanf("%d",&y2);
+    checkifmoveislegal();
+    movepiece();
+  }
+}
+void Game::checkifmoveislegal(){
+
+}
+void Game::movepiece(){
 }
 int main(){
   Game *GO= new Game();
   GO->Initialize();
   GO->ShowBoard(1,1);
+  GO->SetupBoard(1,0);
+  GO->SetupBoard(0,1);
   delete GO;
 }
