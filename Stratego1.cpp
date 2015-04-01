@@ -62,18 +62,6 @@ void Game::Initialize(){
   for(int i=0;i<40;i++){
     DeadRed[i]=DeadBlue[i]=0;
   }
-  /*for (int i=0;i<10;i++){ //just to put pieces on the board
-    for (int j=0;j<10;j++){
-      if (i<4){
-        RedPiece[i][j]=Pieces[j+(i*10)];
-	Board[i][j]=2;
-      }
-      if (i>5){
-	BluePiece[i][j]=Pieces[j+((i-6)*10)];
-	Board[i][j]=2;
-      }
-    }
-   }*/
 }
 void Game::ShowBoard(bool a, bool b){
   for (int i=0;i<10;i++){
@@ -95,7 +83,7 @@ void Game::ShowBoard(bool a, bool b){
 	if (RedPiece[i][j]!=0){
 	  printf("%d\t",RedPiece[i][j]);
 	}
-	else if (b==0 && Board[i][j]==2){
+	else if (b==0 && Board[i][j]==3){
 	  printf("D\t");
 	}
       }
@@ -112,100 +100,146 @@ void Game::ShowBoard(bool a, bool b){
   }
   printf("\n");
 }
-
 void Game::SetupBoard(bool a, bool b){
   int x=0;
   int y=0;
   int i=0;
+  int p=0;
   numberofdeadred=numberofdeadblue=0;
-  if (a){
-    while(i<40){
-      printf("Which Row to put %d:", Pieces[i]);
-      scanf("%d",&x);
-      printf("Which Column to put %d:", Pieces[i]);
-      scanf("%d",&y);
-      //check if its legal
-      if (x>3){
-	printf("stick to the top half\n");
-	continue;
+  printf("0 for premade set up  1 for manual");
+  scanf("%d",&p);
+  if ((bool)p){
+    if (a){
+      while(i<40){
+	printf("Which Row to put %d:", Pieces[i]);
+	scanf("%d",&x);
+	printf("Which Column to put %d:", Pieces[i]);
+	scanf("%d",&y);
+	//check if its legal
+	if (x>3){
+	  printf("stick to the top half\n");
+	  continue;
+	}
+	if (Board[x][y]!=1){
+	  printf("Something is in the way\n");
+	  continue;
+	}
+	if (x<0 || x>9 ||y<0||y>9){
+	  printf("Off of board\n");
+	  continue;
+	}
+	RedPiece[x][y]=Pieces[i];
+	Board[x][y]=2;
+	ShowBoard(1,0);
+	i++;
       }
-      if (Board[x][y]!=1){
-	printf("Something is in the way\n");
-	continue;
+    }
+    x=y=i=0;
+    if (b){
+      while(i<40){
+	printf("Which Row to put %d:", Pieces[i]);
+	scanf("%d",&x);
+	printf("Which Column to put %d:", Pieces[i]);
+	scanf("%d",&y);
+	//check if its legal
+	if (x<6){
+	  printf("stick to the top half\n");
+	  continue;
+	}
+	if (Board[x][y]!=1){
+	  printf("Something is in the way\n");
+	  continue;
+	}
+	if (x<0 || x>9 ||y<0||y>9){
+	  printf("Off of board\n");
+	  continue;
+	}
+	BluePiece[x][y]=Pieces[i];
+	Board[x][y]=3;
+	ShowBoard(0,1);
+	i++;
       }
-      if (x<0 || x>9 ||y<0||y>9){
-	printf("Off of board\n");
-	continue;
-      }
-      RedPiece[x][y]=Pieces[i];
-      Board[x][y]=3;
-      ShowBoard(1,0);
-      i++;
     }
   }
-  x=y=i=0;
-  if (b){
-    while(i<40){
-      printf("Which Row to put %d:", Pieces[i]);
-      scanf("%d",&x);
-      printf("Which Column to put %d:", Pieces[i]);
-      scanf("%d",&y);
-      //check if its legal
-      if (x<6){
-	printf("stick to the top half\n");
-	continue;
+  else {
+    if (a){
+      for (int i=0;i<10;i++){ //just to put pieces on the board
+	for (int j=0;j<10;j++){
+	  if (i<4){
+	    RedPiece[i][j]=Pieces[j+(i*10)];
+	  Board[i][j]=2;
+	  }
+	}
       }
-      if (Board[x][y]!=1){
-	printf("Something is in the way\n");
-	continue;
+      ShowBoard(1,0);
+    }
+    if (b){
+      for (int i=0;i<10;i++){ //just to put pieces on the board
+	for (int j=0;j<10;j++){
+	  if (i>5){
+	    BluePiece[i][j]=Pieces[j+((i-6)*10)];
+	    Board[i][j]=3;
+	  }
+	}
       }
-      if (x<0 || x>9 ||y<0||y>9){
-	printf("Off of board\n");
-	continue;
-      }
-      BluePiece[x][y]=Pieces[i];
-      Board[x][y]=4;
       ShowBoard(0,1);
-      i++;
     }
   }
 }
 void Game::Play(){
   x1=y1=x2=y2=end=keepgoing=0;
   whoseturn=1;
-  while(end==0){
-    if(whoseturn==1)
-      printf("Red Moves");
-    if(whoseturn==2)
-      printf("Blue Moves");
-    while(!keepgoing){
-      printf("Which Piece to move?\nWhich Row: ");
-      scanf("%d",&x1);
-      if (x1<0||x1>9)
-	continue;
-      printf("Which Column: ");
-      scanf("%d",&y1);
-      if (y1<0||y1>9)
-	continue;
-      printf("To Where?\nWhich Row: ");
-      scanf("%d",&x2);
-      if (x2<0||x2>9)
-	continue;
-      printf("Which Column: ");
-      scanf("%d",&y2);
-      if (y2<0||y2>9)
-	continue;
-      keepgoing=1;
-      if(checkifmoveislegal())
-	continue;
-      movepiece();
+  while(!end){
+    printf("Dead Red Pieces\n");
+    for (int i=0;i<numberofdeadred+1;i++){
+      printf("%d,",DeadRed[i]);
     }
+    printf("\nDead Blue Pieces\n");
+    for (int i=0;i<numberofdeadblue+1;i++){
+      printf("%d,",DeadBlue[i]);
+    }
+    if(whoseturn==1){
+      ShowBoard(1,0);
+      printf("\nRed Moves\n");
+    }
+    if(whoseturn==2){
+      ShowBoard(0,1);
+      printf("\nBlue Moves\n");
+    }
+    printf("Which Piece to move?\nWhich Row: ");
+    scanf("%d",&x1);
+    if (x1<0||x1>9){
+      printf("Bad move");
+      continue;
+    }
+    printf("Which Column: ");
+    scanf("%d",&y1);
+    if (y1<0||y1>9){
+      printf("Bad move");
+      continue;
+    }
+    printf("To Where?\nWhich Row: ");
+    scanf("%d",&x2);
+    if (x2<0||x2>9){
+      printf("Bad move");
+      continue;
+    }
+    printf("Which Column: ");
+    scanf("%d",&y2);
+    if (y2<0||y2>9){
+      printf("Bad move");
+      continue;
+    }
+    keepgoing=1;
+    if(checkifmoveislegal())
+      continue;
+    movepiece();
   }
 }
 bool Game::checkifmoveislegal(){
   if (whoseturn==1){//red turn
     if(Board[x1][y1]!=0||Board[x2][y2]!=0){//neither choice was water
-      if (RedPiece[x1][y1]!=0||RedPiece[x1][y1]!=11||RedPiece[x1][y1]!=12){//cant move if space is empty, bomb or flag
+      if (RedPiece[x1][y1]!=0||RedPiece[x1][y1]!=11||RedPiece[x1][y1]!=12||RedPiece[x2][y2]==0){//cant move if space is empty, bomb or flag
 	if (RedPiece[x1][y1]!=2){
 	  if (x2==x1+1||x2==x1-1||y2==y1+1||y2==y1-1){//
 	    return 0;
@@ -223,7 +257,7 @@ bool Game::checkifmoveislegal(){
   }
   else{
     if(Board[x1][y1]!=0||Board[x2][y2]!=0){//neither choice was water
-      if (BluePiece[x1][y1]!=0||BluePiece[x1][y1]!=11||BluePiece[x1][y1]!=12){//cant move if space is empty, bomb or flag
+      if (BluePiece[x1][y1]!=0||BluePiece[x1][y1]!=11||BluePiece[x1][y1]!=12||BluePiece[x2][y2]==0){//cant move if space is empty, bomb or flag
 	if (BluePiece[x1][y1]!=2){
 	  if (x2==x1+1||x2==x1-1||y2==y1+1||y2==y1-1){//
 	    return 0;
@@ -246,6 +280,7 @@ void Game::movepiece(){
   if (whoseturn==1){
     movedpiece=RedPiece[x1][y1];
     RedPiece[x1][y1]=0;
+    Board[x1][y1]=1;
     if (BluePiece[x2][y2]!=0){
       if(movedpiece<=BluePiece[x2][y2]){
 	DeadRed[numberofdeadred]=movedpiece;
@@ -256,15 +291,19 @@ void Game::movepiece(){
 	DeadBlue[numberofdeadblue]=BluePiece[x2][y2];
 	numberofdeadblue++;
 	BluePiece[x2][y2]=0;
+	Board[x2][y2]=2;
       }
     }  
     else{
       RedPiece[x2][y2]=movedpiece;
+      Board[x2][y2]=2;
     }
+    whoseturn=2;
   }
   else{
     movedpiece=BluePiece[x1][y1];
     BluePiece[x1][y1]=0;
+    Board[x1][y1]=1;
     if (RedPiece[x2][y2]!=0){
       if(movedpiece<=RedPiece[x2][y2]){
 	DeadBlue[numberofdeadblue]=movedpiece;
@@ -275,11 +314,14 @@ void Game::movepiece(){
 	DeadRed[numberofdeadred]=RedPiece[x2][y2];
 	numberofdeadred++;
 	RedPiece[x2][y2]=0;
+      	Board[x2][y2]=3;
       }
     }  
     else{
       BluePiece[x2][y2]=movedpiece;
+      Board[x2][y2]=3;
     }
+    whoseturn=1;
   }
 }
 int main(){
