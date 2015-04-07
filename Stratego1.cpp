@@ -28,7 +28,7 @@ public:
   void ShowBoard(bool a, bool b);
   void SetupBoard(bool a, bool b);
   void Play();
-  bool checkifmoveislegal();
+  bool checkifmoveislegal() const;
   void movepiece();
 }; 
 Game::Game(){}
@@ -39,14 +39,14 @@ Game::~Game(){
 void Game::Initialize(){
   Pieces[0]=10;Pieces[10]=6;Pieces[20]=3;Pieces[30]=2;
   Pieces[1]=9; Pieces[11]=5;Pieces[21]=3;Pieces[31]=2;
-  Pieces[2]=8; Pieces[12]=5;Pieces[22]=3;Pieces[32]=1;
-  Pieces[3]=8; Pieces[13]=5;Pieces[23]=3;Pieces[33]=11;
+  Pieces[2]=8; Pieces[12]=5;Pieces[22]=3;Pieces[32]=1; //Spy
+  Pieces[3]=8; Pieces[13]=5;Pieces[23]=3;Pieces[33]=11;//11 are bombs
   Pieces[4]=7; Pieces[14]=5;Pieces[24]=2;Pieces[34]=11;
   Pieces[5]=7; Pieces[15]=4;Pieces[25]=2;Pieces[35]=11;
   Pieces[6]=7; Pieces[16]=4;Pieces[26]=2;Pieces[36]=11;
   Pieces[7]=6; Pieces[17]=4;Pieces[27]=2;Pieces[37]=11;
   Pieces[8]=6; Pieces[18]=4;Pieces[28]=2;Pieces[38]=11;
-  Pieces[9]=6; Pieces[19]=3;Pieces[29]=2;Pieces[39]=12; 
+  Pieces[9]=6; Pieces[19]=3;Pieces[29]=2;Pieces[39]=12;//12 is the flag
   for (int i=0;i<10;i++){
     for (int j=0;j<10;j++){
       Board[i][j]=1;
@@ -143,7 +143,7 @@ void Game::SetupBoard(bool a, bool b){
 	scanf("%d",&y);
 	//check if its legal
 	if (x<6){
-	  printf("stick to the top half\n");
+	  printf("stick to the bottom half\n");
 	  continue;
 	}
 	if (Board[x][y]!=1){
@@ -231,44 +231,115 @@ void Game::Play(){
       continue;
     }
     keepgoing=1;
-    if(checkifmoveislegal())
+    if(checkifmoveislegal()){
+      printf("Not Legal\n");
       continue;
+    }
     movepiece();
   }
+  printf("game over\n");
+  if (whoseturn==1){
+    printf("Blue Wins\n");
+  }
+  else{
+    printf("Red Wins\n");
+  }
 }
-bool Game::checkifmoveislegal(){
+bool Game::checkifmoveislegal() const{
   if (whoseturn==1){//red turn
-    if(Board[x1][y1]!=0||Board[x2][y2]!=0){//neither choice was water
-      if (RedPiece[x1][y1]!=0||RedPiece[x1][y1]!=11||RedPiece[x1][y1]!=12||RedPiece[x2][y2]==0){//cant move if space is empty, bomb or flag
+    if(Board[x1][y1]!=0&&Board[x2][y2]!=0){//neither choice was water
+      if (RedPiece[x1][y1]!=0&&RedPiece[x1][y1]!=11&&RedPiece[x1][y1]!=12&&RedPiece[x2][y2]==0){//cant move if space is empty, bomb or flag
 	if (RedPiece[x1][y1]!=2){
 	  if (x2==x1+1||x2==x1-1||y2==y1+1||y2==y1-1){//
 	    return 0;
 	  }
 	} 
-	else if (RedPiece[x1][y1]==2){
-	  for (int i=1;i<11;i++){
-	    if (x2==x1+i||x2==x1-i||y2==y1+i||y2==y1-i){//
-	      return 0;
+	else if (RedPiece[x1][y1]==2){//need to make sure nothing is in the way
+	  int diffx=0;
+	  int diffy=0;
+	  diffx=abs(x2-x1);
+	  diffy=abs(y2-y1);
+	  if(x2-x1>0){
+	    for (int i=1;i<diffx+1;i++){
+	      if (Board[x1+i][y1]!=1){//
+		return 1;
+	      }
 	    }
 	  }
+	  else if(x2-x1<0){
+	    for (int i=1;i>diffx+1;i--){
+	      if (Board[x1-i][y1]!=1){//
+		return 1;
+	      }
+	    }
+	  }
+	  else if(y2-y1>0){
+	    for (int i=1;i<diffy+1;i++){
+	      if (Board[x1][y1+i]!=1){//
+		return 1;
+	      }
+	    }
+	  }
+	  else if(y2-y1<0){
+	    for (int i=1;i>diffy+1;i--){
+	      if (Board[x1][y1-i]!=1){//
+		return 1;
+	      }
+	    }
+	  }
+	  else if(diffx==0&&diffy==0){
+	    return 1;
+	  }
+	  return 0;
 	}
       }
     }
   }
-  else{
-    if(Board[x1][y1]!=0||Board[x2][y2]!=0){//neither choice was water
-      if (BluePiece[x1][y1]!=0||BluePiece[x1][y1]!=11||BluePiece[x1][y1]!=12||BluePiece[x2][y2]==0){//cant move if space is empty, bomb or flag
+  else if(whoseturn==2){//blue turn
+    if(Board[x1][y1]!=0&&Board[x2][y2]!=0){//neither choice was water
+      if (BluePiece[x1][y1]!=0&&BluePiece[x1][y1]!=11&&BluePiece[x1][y1]!=12&&BluePiece[x2][y2]==0){//cant move if space is empty, bomb or flag
 	if (BluePiece[x1][y1]!=2){
 	  if (x2==x1+1||x2==x1-1||y2==y1+1||y2==y1-1){//
 	    return 0;
 	  }
 	} 
 	else if (BluePiece[x1][y1]==2){
-	  for (int i=1;i<11;i++){
-	    if (x2==x1+i||x2==x1-i||y2==y1+i||y2==y1-i){//
-	      return 0;
+	  int diffx=0;
+	  int diffy=0;
+	  diffx=abs(x2-x1);
+	  diffy=abs(y2-y1);
+	  if(x2-x1>0){
+	    for (int i=1;i<diffx+1;i++){
+	      if (Board[x1+i][y1]!=1){//
+		return 1;
+	      }
 	    }
 	  }
+	  else if(x2-x1<0){
+	    for (int i=1;i>diffx+1;i--){
+	      if (Board[x1-i][y1]!=1){//
+		return 1;
+	      }
+	    }
+	  }
+	  else if(y2-y1>0){
+	    for (int i=1;i<diffy+1;i++){
+	      if (Board[x1][y1+i]!=1){//
+		return 1;
+	      }
+	    }
+	  }
+	  else if(y2-y1<0){
+	    for (int i=1;i>diffy+1;i--){
+	      if (Board[x1][y1-i]!=1){//
+		return 1;
+	      }
+	    }
+	  }
+	  else if(diffx==0&&diffy==0){
+	    return 1;
+	  }
+	  return 0;
 	}
       }
     }
@@ -281,6 +352,21 @@ void Game::movepiece(){
     movedpiece=RedPiece[x1][y1];
     RedPiece[x1][y1]=0;
     Board[x1][y1]=1;
+    if (BluePiece[x2][y2]==12){//flag captured
+      end=1;
+    }
+    if (movedpiece==3&&BluePiece[x2][y2]==11){//bomb defused by 3
+      //DeadBlue[numberofdeadblue]=BluePiece[x2][y2];
+      //numberofdeadblue++;
+      BluePiece[x2][y2]=0;
+      Board[x2][y2]=2;
+    }
+    if (movedpiece==1&&BluePiece[x2][y2]==10){//Spy kills 10
+      //DeadBlue[numberofdeadblue]=BluePiece[x2][y2];
+      //numberofdeadblue++;
+      BluePiece[x2][y2]=0;
+      Board[x2][y2]=2;
+    }
     if (BluePiece[x2][y2]!=0){
       if(movedpiece<=BluePiece[x2][y2]){
 	DeadRed[numberofdeadred]=movedpiece;
@@ -304,6 +390,21 @@ void Game::movepiece(){
     movedpiece=BluePiece[x1][y1];
     BluePiece[x1][y1]=0;
     Board[x1][y1]=1;
+    if (RedPiece[x2][y2]==12){//flag captured
+      end=1;
+    }
+    if (movedpiece==3&&RedPiece[x2][y2]==11){//bomb defused by 3
+      //DeadBlue[numberofdeadblue]=BluePiece[x2][y2];
+      //numberofdeadblue++;
+      RedPiece[x2][y2]=0;
+      Board[x2][y2]=2;
+    }
+    if (movedpiece==1&&RedPiece[x2][y2]==10){//Spy kills 10
+      //DeadBlue[numberofdeadblue]=BluePiece[x2][y2];
+      //numberofdeadblue++;
+      RedPiece[x2][y2]=0;
+      Board[x2][y2]=2;
+    }
     if (RedPiece[x2][y2]!=0){
       if(movedpiece<=RedPiece[x2][y2]){
 	DeadBlue[numberofdeadblue]=movedpiece;
