@@ -260,28 +260,28 @@ bool Game::checkifmoveislegal() const{
 	  diffx=abs(x2-x1);
 	  diffy=abs(y2-y1);
 	  if(x2-x1>0){
-	    for (int i=1;i<diffx+1;i++){
+	    for (int i=1;i<diffx;i++){
 	      if (Board[x1+i][y1]!=1){//
 		return 1;
 	      }
 	    }
 	  }
 	  else if(x2-x1<0){
-	    for (int i=1;i>diffx+1;i--){
+	    for (int i=1;i>diffx;i--){
 	      if (Board[x1-i][y1]!=1){//
 		return 1;
 	      }
 	    }
 	  }
 	  else if(y2-y1>0){
-	    for (int i=1;i<diffy+1;i++){
+	    for (int i=1;i<diffy;i++){
 	      if (Board[x1][y1+i]!=1){//
 		return 1;
 	      }
 	    }
 	  }
 	  else if(y2-y1<0){
-	    for (int i=1;i>diffy+1;i--){
+	    for (int i=1;i>diffy;i--){
 	      if (Board[x1][y1-i]!=1){//
 		return 1;
 	      }
@@ -309,28 +309,28 @@ bool Game::checkifmoveislegal() const{
 	  diffx=abs(x2-x1);
 	  diffy=abs(y2-y1);
 	  if(x2-x1>0){
-	    for (int i=1;i<diffx+1;i++){
+	    for (int i=1;i<diffx;i++){
 	      if (Board[x1+i][y1]!=1){//
 		return 1;
 	      }
 	    }
 	  }
 	  else if(x2-x1<0){
-	    for (int i=1;i>diffx+1;i--){
+	    for (int i=1;i>diffx;i--){
 	      if (Board[x1-i][y1]!=1){//
 		return 1;
 	      }
 	    }
 	  }
 	  else if(y2-y1>0){
-	    for (int i=1;i<diffy+1;i++){
+	    for (int i=1;i<diffy;i++){
 	      if (Board[x1][y1+i]!=1){//
 		return 1;
 	      }
 	    }
 	  }
 	  else if(y2-y1<0){
-	    for (int i=1;i>diffy+1;i--){
+	    for (int i=1;i>diffy;i--){
 	      if (Board[x1][y1-i]!=1){//
 		return 1;
 	      }
