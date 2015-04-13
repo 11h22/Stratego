@@ -16,7 +16,6 @@ class Game{
   int y2;
   int whoseturn;//1 for red 2 for blue
   bool end;
-  bool keepgoing;
   int DeadRed[40];
   int numberofdeadred;
   int DeadBlue[40];
@@ -26,6 +25,7 @@ class Game{
   int *possibley1;
   int *possiblex2;
   int *possibley2;
+  int moves;
 public:
   Game();
   ~Game();
@@ -38,6 +38,7 @@ public:
   int CheckforMoves();
   void AskUsertomove();
   void AskComptomove();
+  void Analyzegames();
 }; 
 Game::Game(){}
 Game::~Game(){
@@ -70,6 +71,7 @@ void Game::Initialize(){
   for(int i=0;i<40;i++){
     DeadRed[i]=DeadBlue[i]=0;
   }
+  moves=0;
 }
 void Game::ShowBoard(bool a, bool b){
   for (int i=0;i<10;i++){
@@ -215,7 +217,7 @@ void Game::SetupBoard(bool a, bool b){
   }
 }
 void Game::Play(){
-  x1=y1=x2=y2=end=keepgoing=0;
+  x1=y1=x2=y2=end=0;
   whoseturn=1;
   while(!end){
     printf("Dead Red Pieces\n");
@@ -242,7 +244,6 @@ void Game::Play(){
       printf("\nBlue Moves\n");
       AskComptomove();
     }
-    keepgoing=1;
     if(checkifmoveislegal(x1,y1,x2,y2)){
       printf("Not Legal\n");
       continue;
@@ -252,6 +253,8 @@ void Game::Play(){
     free(possibley1);
     free(possiblex2);
     free(possibley2);
+    moves++;
+    Analyzegames();
   }
   printf("game over\n");
   if (whoseturn==1){
@@ -456,27 +459,27 @@ void Game::movepiece(){
       //DeadBlue[numberofdeadblue]=BluePiece[x2][y2];
       //numberofdeadblue++;
       RedPiece[x2][y2]=0;
-      Board[x2][y2]=2;
+      Board[x2][y2]=3;
       printf("Bomb defused by 3");
     }
     if (movedpiece==1&&RedPiece[x2][y2]==10){//Spy kills 10
       //DeadBlue[numberofdeadblue]=BluePiece[x2][y2];
       //numberofdeadblue++;
       RedPiece[x2][y2]=0;
-      Board[x2][y2]=2;
+      Board[x2][y2]=3;
       printf("Spy kills 10");
     }
     if (RedPiece[x2][y2]!=0){
       if(movedpiece<=RedPiece[x2][y2]){
 	DeadBlue[numberofdeadblue]=movedpiece;
 	numberofdeadblue++;
-	//redpiece dies
-	printf("Blue %d kills Red %d",movedpiece,RedPiece[x2][y2]);
+	//bluepiece dies
+	printf("Red %d kills Blue %d",RedPiece[x2][y2],movedpiece);
       }
       if(movedpiece>RedPiece[x2][y2]){
 	DeadRed[numberofdeadred]=RedPiece[x2][y2];
 	numberofdeadred++;
-	printf("Blue %d kills Red %d",RedPiece[x2][y2],movedpiece);
+	printf("Blue %d kills Red %d",movedpiece,RedPiece[x2][y2]);
 	RedPiece[x2][y2]=0;
       	Board[x2][y2]=3;
       }
@@ -759,6 +762,29 @@ int Game::CheckforMoves(){
     }
   }
   return numberofmoves;
+}
+void Game::Analyzegames(){
+  FILE * pFileW;
+  pFileW = fopen ("/home/o/Parse/Stratego.text", "w");
+  for(int i=0;i<10;i++){
+    for(int j=0;j<10;j++){
+      fprintf(pFileW,"%d",RedPiece[i][j]);
+      fprintf(pFileW,"%d",BluePiece[i][j]);
+    }
+  }
+  fclose (pFileW);
+
+  /*  FILE * pFileR;
+  pFileR = fopen ("/home/o/Parse/Stratego.text", "r");
+  for(int k=0;k<moves;k++){
+    for(int i=0;i<10;i++){
+      for(int j=0;j<10;j++){
+	fscanf(pFileR,"%d",&RedPiece[i][j]);
+	fscanf(pFileR,"%d",&BluePiece[i][j]);
+      }
+    }
+  }
+  fclose (pFileR);*/
 }
 int main(){
   Game *GO= new Game();
