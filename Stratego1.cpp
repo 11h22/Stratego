@@ -164,21 +164,41 @@ void Game::SetupBoard(bool a, bool b){
   }
   else {
     if (a){
+      RedPiece[0][0]=2;RedPiece[0][1]=3;RedPiece[0][2]=11;RedPiece[0][3]=2;
+      RedPiece[0][4]=3;RedPiece[0][5]=11;RedPiece[0][6]=12;RedPiece[0][7]=11;
+      RedPiece[0][8]=3;RedPiece[0][9]=3;RedPiece[1][0]=4;RedPiece[1][1]=11;
+      RedPiece[1][2]=4;RedPiece[1][3]=7;RedPiece[1][4]=8;RedPiece[1][5]=5;
+      RedPiece[1][6]=11;RedPiece[1][7]=5;RedPiece[1][8]=6;RedPiece[1][9]=4;
+      RedPiece[2][0]=5;RedPiece[2][1]=4;RedPiece[2][2]=11;RedPiece[2][3]=1;
+      RedPiece[2][4]=9;RedPiece[2][5]=2;RedPiece[2][6]=7;RedPiece[2][7]=7;
+      RedPiece[2][8]=8;RedPiece[2][9]=2;RedPiece[3][0]=6;RedPiece[3][1]=2;
+      RedPiece[3][2]=2;RedPiece[3][3]=5;RedPiece[3][4]=2;RedPiece[3][5]=6;
+      RedPiece[3][6]=3;RedPiece[3][7]=10;RedPiece[3][8]=2;RedPiece[3][9]=6;
       for (int i=0;i<10;i++){ //just to put pieces on the board
 	for (int j=0;j<10;j++){
 	  if (i<4){
-	    RedPiece[i][j]=Pieces[j+(i*10)];
-	  Board[i][j]=2;
+	    //RedPiece[i][j]=Pieces[j+(i*10)];
+	    Board[i][j]=2;
 	  }
 	}
       }
       ShowBoard(1,0);
     }
     if (b){
+      BluePiece[9][0]=12;BluePiece[9][1]=11;BluePiece[9][2]=3;BluePiece[9][3]=3;
+      BluePiece[9][4]=3;BluePiece[9][5]=6;BluePiece[9][6]=2;BluePiece[9][7]=2;
+      BluePiece[9][8]=6;BluePiece[9][9]=2;BluePiece[8][0]=11;BluePiece[8][1]=7;
+      BluePiece[8][2]=3;BluePiece[8][3]=3;BluePiece[8][4]=8;BluePiece[8][5]=7;
+      BluePiece[8][6]=2;BluePiece[8][7]=7;BluePiece[8][8]=4;BluePiece[8][9]=2;
+      BluePiece[7][0]=8;BluePiece[7][1]=1;BluePiece[7][2]=11;BluePiece[7][3]=6;
+      BluePiece[7][4]=4;BluePiece[7][5]=2;BluePiece[7][6]=2;BluePiece[7][7]=11;
+      BluePiece[7][8]=5;BluePiece[7][9]=6;BluePiece[6][0]=11;BluePiece[6][1]=9;
+      BluePiece[6][2]=10;BluePiece[6][3]=2;BluePiece[6][4]=4;BluePiece[6][5]=5;
+      BluePiece[6][6]=4;BluePiece[6][7]=5;BluePiece[6][8]=5;BluePiece[6][9]=11;
       for (int i=0;i<10;i++){ //just to put pieces on the board
 	for (int j=0;j<10;j++){
 	  if (i>5){
-	    BluePiece[i][j]=Pieces[j+((i-6)*10)];
+	    //BluePiece[i][j]=Pieces[j+((i-6)*10)];
 	    Board[i][j]=3;
 	  }
 	}
@@ -269,7 +289,7 @@ bool Game::checkifmoveislegal(int cx1,int cy1,int cx2,int cy2) const{
 	    }
 	  }
 	  else if(cx2-cx1<0){
-	    for (int i=1;i>diffx;i--){
+	    for (int i=1;i<diffx;i++){
 	      if (Board[cx1-i][cy1]!=1){//
 		return 1;
 	      }
@@ -283,7 +303,7 @@ bool Game::checkifmoveislegal(int cx1,int cy1,int cx2,int cy2) const{
 	    }
 	  }
 	  else if(cy2-cy1<0){
-	    for (int i=1;i>diffy;i--){
+	    for (int i=1;i<diffy;i++){
 	      if (Board[cx1][cy1-i]!=1){//
 		return 1;
 	      }
@@ -318,7 +338,7 @@ bool Game::checkifmoveislegal(int cx1,int cy1,int cx2,int cy2) const{
 	    }
 	  }
 	  else if(cx2-cx1<0){
-	    for (int i=1;i>diffx;i--){
+	    for (int i=1;i<diffx;i++){
 	      if (Board[cx1-i][cy1]!=1){//
 		return 1;
 	      }
@@ -332,7 +352,7 @@ bool Game::checkifmoveislegal(int cx1,int cy1,int cx2,int cy2) const{
 	    }
 	  }
 	  else if(cy2-cy1<0){
-	    for (int i=1;i>diffy;i--){
+	    for (int i=1;i<diffy;i++){
 	      if (Board[cx1][cy1-i]!=1){//
 		return 1;
 	      }
@@ -433,7 +453,7 @@ int Game::CheckforMoves() const{
     for (int i=0;i<10;i++){
       for (int j=0;j<10;j++){
 	if (RedPiece[i][j]!=0){
-	  //if(RedPiece[i][j]!=2){
+	  if(RedPiece[i][j]!=2){
 	    if(i<9){
 	      if(!checkifmoveislegal(i,j,i+1,j)){
 		printf("%d %d to %d %d\n",i,j,i+1,j);
@@ -458,8 +478,8 @@ int Game::CheckforMoves() const{
 		numberofmoves++;
 	      }
 	    }
-	    //}
-	    /*if(RedPiece[i][j]==2){
+	  }
+	  if(RedPiece[i][j]==2){
 	    if(i<9){
 	      for(int k=1;k<10-i;k++){
 		if(!checkifmoveislegal(i,j,i+k,j)){
@@ -477,7 +497,7 @@ int Game::CheckforMoves() const{
 	      }
 	    }
 	    if(i>0){
-	      for(int k=1;k<10-i;k++){
+	      for(int k=1;k<i+1;k++){
 		if(!checkifmoveislegal(i,j,i-k,j)){
 		  printf("%d %d to %d %d\n",i,j,i-k,j);
 		  numberofmoves++;
@@ -485,14 +505,14 @@ int Game::CheckforMoves() const{
 	      }
 	    }
 	    if(j>0){
-	      for(int k=1;k<10-j;k++){
+	      for(int k=1;k<j+1;k++){
 		if(!checkifmoveislegal(i,j,i,j-k)){
 		  printf("%d %d to %d %d\n",i,j,i,j-k);
 		  numberofmoves++;
 		}
 	      }
 	    }
-	  }*/
+	  }
 	}
       }
     }
@@ -501,7 +521,7 @@ int Game::CheckforMoves() const{
     for (int i=0;i<10;i++){
       for (int j=0;j<10;j++){
 	if (BluePiece[i][j]!=0){
-	  //if(BluePiece[i][j]!=2){
+	  if(BluePiece[i][j]!=2){
 	    if(i<9){
 	      if(!checkifmoveislegal(i,j,i+1,j)){
 		printf("%d %d to %d %d\n",i,j,i+1,j);
@@ -526,8 +546,8 @@ int Game::CheckforMoves() const{
 		numberofmoves++;
 	      }
 	    }
-	    //}
-	  /*if(BluePiece[i][j]==2){
+	  }
+	  if(BluePiece[i][j]==2){
 	    if(i<9){
 	      for(int k=1;k<10-i;k++){
 		if(!checkifmoveislegal(i,j,i+k,j)){
@@ -545,7 +565,7 @@ int Game::CheckforMoves() const{
 	      }
 	    }
 	    if(i>0){
-	      for(int k=1;k<10-i;k++){
+	      for(int k=1;k<i+1;k++){
 		if(!checkifmoveislegal(i,j,i-k,j)){
 		  printf("%d %d to %d %d\n",i,j,i-k,j);
 		  numberofmoves++;
@@ -553,14 +573,14 @@ int Game::CheckforMoves() const{
 	      }
 	    }
 	    if(j>0){
-	      for(int k=1;k<10-j;k++){
+	      for(int k=1;k<j+1;k++){
 		if(!checkifmoveislegal(i,j,i,j-k)){
 		  printf("%d %d to %d %d\n",i,j,i,j-k);
 		  numberofmoves++;
 		}
 	      }
 	    }
-	  }*/
+	  }
 	}
       }
     }
