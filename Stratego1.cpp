@@ -28,8 +28,9 @@ public:
   void ShowBoard(bool a, bool b);
   void SetupBoard(bool a, bool b);
   void Play();
-  bool checkifmoveislegal() const;
+  bool checkifmoveislegal(int cx1,int cy1,int cx2,int cy2) const;
   void movepiece();
+  int CheckforMoves() const;
 }; 
 Game::Game(){}
 Game::~Game(){
@@ -206,32 +207,33 @@ void Game::Play(){
       ShowBoard(0,1);
       printf("\nBlue Moves\n");
     }
+    printf("Number of moves: %d\n",CheckforMoves());
     printf("Which Piece to move?\nWhich Row: ");
     scanf("%d",&x1);
     if (x1<0||x1>9){
-      printf("Bad move");
+      printf("Bad move\n");
       continue;
     }
     printf("Which Column: ");
     scanf("%d",&y1);
     if (y1<0||y1>9){
-      printf("Bad move");
+      printf("Bad move\n");
       continue;
     }
     printf("To Where?\nWhich Row: ");
     scanf("%d",&x2);
     if (x2<0||x2>9){
-      printf("Bad move");
+      printf("Bad move\n");
       continue;
     }
     printf("Which Column: ");
     scanf("%d",&y2);
     if (y2<0||y2>9){
-      printf("Bad move");
+      printf("Bad move\n");
       continue;
     }
     keepgoing=1;
-    if(checkifmoveislegal()){
+    if(checkifmoveislegal(x1,y1,x2,y2)){
       printf("Not Legal\n");
       continue;
     }
@@ -245,44 +247,44 @@ void Game::Play(){
     printf("Red Wins\n");
   }
 }
-bool Game::checkifmoveislegal() const{
+bool Game::checkifmoveislegal(int cx1,int cy1,int cx2,int cy2) const{
   if (whoseturn==1){//red turn
-    if(Board[x1][y1]!=0&&Board[x2][y2]!=0){//neither choice was water
-      if (RedPiece[x1][y1]!=0&&RedPiece[x1][y1]!=11&&RedPiece[x1][y1]!=12&&RedPiece[x2][y2]==0){//cant move if space is empty, bomb or flag
-	if (RedPiece[x1][y1]!=2){
-	  if (x2==x1+1||x2==x1-1||y2==y1+1||y2==y1-1){//
+    if(Board[cx1][cy1]!=0&&Board[cx2][cy2]!=0){//neither choice was water
+      if (RedPiece[cx1][cy1]!=0&&RedPiece[cx1][cy1]!=11&&RedPiece[cx1][cy1]!=12&&RedPiece[cx2][cy2]==0){//cant move if space is empty, bomb or flag
+	if (RedPiece[cx1][cy1]!=2){
+	  if (cx2==cx1+1||cx2==cx1-1||cy2==cy1+1||cy2==y1-1){//
 	    return 0;
 	  }
 	} 
-	else if (RedPiece[x1][y1]==2){//need to make sure nothing is in the way
+	else if (RedPiece[cx1][cy1]==2){//need to make sure nothing is in the way
 	  int diffx=0;
 	  int diffy=0;
-	  diffx=abs(x2-x1);
-	  diffy=abs(y2-y1);
-	  if(x2-x1>0){
+	  diffx=abs(cx2-cx1);
+	  diffy=abs(cy2-cy1);
+	  if(cx2-cx1>0){
 	    for (int i=1;i<diffx;i++){
-	      if (Board[x1+i][y1]!=1){//
+	      if (Board[cx1+i][cy1]!=1){//
 		return 1;
 	      }
 	    }
 	  }
-	  else if(x2-x1<0){
+	  else if(cx2-cx1<0){
 	    for (int i=1;i>diffx;i--){
-	      if (Board[x1-i][y1]!=1){//
+	      if (Board[cx1-i][cy1]!=1){//
 		return 1;
 	      }
 	    }
 	  }
-	  else if(y2-y1>0){
+	  else if(cy2-cy1>0){
 	    for (int i=1;i<diffy;i++){
-	      if (Board[x1][y1+i]!=1){//
+	      if (Board[cx1][cy1+i]!=1){//
 		return 1;
 	      }
 	    }
 	  }
-	  else if(y2-y1<0){
+	  else if(cy2-cy1<0){
 	    for (int i=1;i>diffy;i--){
-	      if (Board[x1][y1-i]!=1){//
+	      if (Board[cx1][cy1-i]!=1){//
 		return 1;
 	      }
 	    }
@@ -296,42 +298,42 @@ bool Game::checkifmoveislegal() const{
     }
   }
   else if(whoseturn==2){//blue turn
-    if(Board[x1][y1]!=0&&Board[x2][y2]!=0){//neither choice was water
-      if (BluePiece[x1][y1]!=0&&BluePiece[x1][y1]!=11&&BluePiece[x1][y1]!=12&&BluePiece[x2][y2]==0){//cant move if space is empty, bomb or flag
-	if (BluePiece[x1][y1]!=2){
-	  if (x2==x1+1||x2==x1-1||y2==y1+1||y2==y1-1){//
+    if(Board[cx1][cy1]!=0&&Board[cx2][cy2]!=0){//neither choice was water
+      if (BluePiece[cx1][cy1]!=0&&BluePiece[cx1][cy1]!=11&&BluePiece[cx1][cy1]!=12&&BluePiece[cx2][cy2]==0){//cant move if space is empty, bomb or flag
+	if (BluePiece[cx1][cy1]!=2){
+	  if (cx2==cx1+1||cx2==cx1-1||cy2==cy1+1||cy2==cy1-1){//
 	    return 0;
 	  }
 	} 
-	else if (BluePiece[x1][y1]==2){
+	else if (BluePiece[cx1][cy1]==2){
 	  int diffx=0;
 	  int diffy=0;
-	  diffx=abs(x2-x1);
+	  diffx=abs(cx2-cx1);
 	  diffy=abs(y2-y1);
-	  if(x2-x1>0){
+	  if(cx2-cx1>0){
 	    for (int i=1;i<diffx;i++){
-	      if (Board[x1+i][y1]!=1){//
+	      if (Board[cx1+i][cy1]!=1){//
 		return 1;
 	      }
 	    }
 	  }
-	  else if(x2-x1<0){
+	  else if(cx2-cx1<0){
 	    for (int i=1;i>diffx;i--){
-	      if (Board[x1-i][y1]!=1){//
+	      if (Board[cx1-i][cy1]!=1){//
 		return 1;
 	      }
 	    }
 	  }
-	  else if(y2-y1>0){
+	  else if(cy2-cy1>0){
 	    for (int i=1;i<diffy;i++){
-	      if (Board[x1][y1+i]!=1){//
+	      if (Board[cx1][cy1+i]!=1){//
 		return 1;
 	      }
 	    }
 	  }
-	  else if(y2-y1<0){
+	  else if(cy2-cy1<0){
 	    for (int i=1;i>diffy;i--){
-	      if (Board[x1][y1-i]!=1){//
+	      if (Board[cx1][cy1-i]!=1){//
 		return 1;
 	      }
 	    }
@@ -424,6 +426,146 @@ void Game::movepiece(){
     }
     whoseturn=1;
   }
+}
+int Game::CheckforMoves() const{
+  int numberofmoves=0;
+  if (whoseturn==1){
+    for (int i=0;i<10;i++){
+      for (int j=0;j<10;j++){
+	if (RedPiece[i][j]!=0){
+	  //if(RedPiece[i][j]!=2){
+	    if(i<9){
+	      if(!checkifmoveislegal(i,j,i+1,j)){
+		printf("%d %d to %d %d\n",i,j,i+1,j);
+		numberofmoves++;
+	      }
+	    }
+	    if(j<9){
+	      if(!checkifmoveislegal(i,j,i,j+1)){
+		printf("%d %d to %d %d\n",i,j,i,j+1);
+		numberofmoves++;
+	      }
+	    }
+	    if(i>0){
+	      if(!checkifmoveislegal(i,j,i-1,j)){
+		printf("%d %d to %d %d\n",i,j,i-1,j);
+		numberofmoves++;
+	      }
+	    }
+	    if(j>0){
+	      if(!checkifmoveislegal(i,j,i,j-1)){
+		printf("%d %d to %d %d\n",i,j,i,j-1);
+		numberofmoves++;
+	      }
+	    }
+	    //}
+	    /*if(RedPiece[i][j]==2){
+	    if(i<9){
+	      for(int k=1;k<10-i;k++){
+		if(!checkifmoveislegal(i,j,i+k,j)){
+		  printf("%d %d to %d %d\n",i,j,i+k,j);
+		  numberofmoves++;
+		}
+	      }
+	    }
+	    if(j<9){
+	      for(int k=1;k<10-j;k++){
+		if(!checkifmoveislegal(i,j,i,j+k)){
+		  printf("%d %d to %d %d\n",i,j,i,j+k);
+		  numberofmoves++;
+		}
+	      }
+	    }
+	    if(i>0){
+	      for(int k=1;k<10-i;k++){
+		if(!checkifmoveislegal(i,j,i-k,j)){
+		  printf("%d %d to %d %d\n",i,j,i-k,j);
+		  numberofmoves++;
+		}
+	      }
+	    }
+	    if(j>0){
+	      for(int k=1;k<10-j;k++){
+		if(!checkifmoveislegal(i,j,i,j-k)){
+		  printf("%d %d to %d %d\n",i,j,i,j-k);
+		  numberofmoves++;
+		}
+	      }
+	    }
+	  }*/
+	}
+      }
+    }
+  }
+  else if (whoseturn==2){
+    for (int i=0;i<10;i++){
+      for (int j=0;j<10;j++){
+	if (BluePiece[i][j]!=0){
+	  //if(BluePiece[i][j]!=2){
+	    if(i<9){
+	      if(!checkifmoveislegal(i,j,i+1,j)){
+		printf("%d %d to %d %d\n",i,j,i+1,j);
+		numberofmoves++;
+	      }
+	    }
+	    if(j<9){
+	      if(!checkifmoveislegal(i,j,i,j+1)){
+		printf("%d %d to %d %d\n",i,j,i,j+1);
+		numberofmoves++;
+	      }
+	    }
+	    if(i>0){
+	      if(!checkifmoveislegal(i,j,i-1,j)){
+		printf("%d %d to %d %d\n",i,j,i-1,j);
+		numberofmoves++;
+	      }
+	    }
+	    if(j>0){
+	      if(!checkifmoveislegal(i,j,i,j-1)){
+		printf("%d %d to %d %d\n",i,j,i,j-1);
+		numberofmoves++;
+	      }
+	    }
+	    //}
+	  /*if(BluePiece[i][j]==2){
+	    if(i<9){
+	      for(int k=1;k<10-i;k++){
+		if(!checkifmoveislegal(i,j,i+k,j)){
+		  printf("%d %d to %d %d\n",i,j,i+k,j);
+		  numberofmoves++;
+		}
+	      }
+	    }
+	    if(j<9){
+	      for(int k=1;k<10-j;k++){
+		if(!checkifmoveislegal(i,j,i,j+k)){
+		  printf("%d %d to %d %d\n",i,j,i,j+k);
+		  numberofmoves++;
+		}
+	      }
+	    }
+	    if(i>0){
+	      for(int k=1;k<10-i;k++){
+		if(!checkifmoveislegal(i,j,i-k,j)){
+		  printf("%d %d to %d %d\n",i,j,i-k,j);
+		  numberofmoves++;
+		}
+	      }
+	    }
+	    if(j>0){
+	      for(int k=1;k<10-j;k++){
+		if(!checkifmoveislegal(i,j,i,j-k)){
+		  printf("%d %d to %d %d\n",i,j,i,j-k);
+		  numberofmoves++;
+		}
+	      }
+	    }
+	  }*/
+	}
+      }
+    }
+  }
+  return numberofmoves;
 }
 int main(){
   Game *GO= new Game();
