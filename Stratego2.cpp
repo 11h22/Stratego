@@ -38,7 +38,7 @@ public:
   int CheckforMoves();
   void AskUsertomove();
   void AskComptomove();
-  void Analyzegames();
+  void SaveGame();
 }; 
 Game::Game(){}
 Game::~Game(){
@@ -219,6 +219,22 @@ void Game::SetupBoard(bool a, bool b){
 void Game::Play(){
   x1=y1=x2=y2=end=0;
   whoseturn=1;
+  FILE * pFileW;
+  pFileW = fopen ("/home/o/Stratego/Stratego.text", "a");
+  for(int i=0;i<10;i++){
+    for(int j=0;j<10;j++){
+      if(RedPiece[i][j]==0&&BluePiece[i][j]==0){
+	fprintf(pFileW,"0,");
+      }
+      else if(RedPiece[i][j]!=0){
+	fprintf(pFileW,"%d,",RedPiece[i][j]);
+      }
+      else if(BluePiece[i][j]!=0){
+	fprintf(pFileW,"%d,",BluePiece[i][j]);
+      }
+    }
+  }
+  fclose (pFileW);
   while(!end){
     printf("Dead Red Pieces\n");
     for (int i=0;i<numberofdeadred+1;i++){
@@ -233,14 +249,20 @@ void Game::Play(){
     printf("Number of moves: %d\n",numofmoves);
     if(numofmoves==0){
       end=1;
+      free(possiblex1);
+      free(possibley1);
+      free(possiblex2);
+      free(possibley2);
+      continue;
     }
     if(whoseturn==1){
-      ShowBoard(1,0);
+      //ShowBoard(1,0);
       printf("\nRed Moves\n");
-      AskUsertomove();
+      //AskUsertomove();
+      AskComptomove();
     }
     if(whoseturn==2){
-      ShowBoard(0,1);
+      //ShowBoard(0,1);
       printf("\nBlue Moves\n");
       AskComptomove();
     }
@@ -254,14 +276,22 @@ void Game::Play(){
     free(possiblex2);
     free(possibley2);
     moves++;
-    Analyzegames();
+    SaveGame();
   }
   printf("game over\n");
   if (whoseturn==1){
     printf("Blue Wins\n");
+    FILE * pFileW;
+    pFileW = fopen ("/home/o/Stratego/Stratego.text", "a");
+    fprintf(pFileW,"Blue Wins\n");
+    fclose (pFileW);
   }
   else{
     printf("Red Wins\n");
+    FILE * pFileW;
+    pFileW = fopen ("/home/o/Stratego/Stratego.text", "a");
+    fprintf(pFileW,"Red Wins\n");
+    fclose (pFileW);
   }
 }
 void Game::AskUsertomove(){
@@ -504,7 +534,7 @@ int Game::CheckforMoves(){
 	  if(RedPiece[i][j]!=2){
 	    if(i<9){
 	      if(!checkifmoveislegal(i,j,i+1,j)){
-		printf("%d %d to %d %d\n",i,j,i+1,j);
+		//printf("%d %d to %d %d\n",i,j,i+1,j);
 		numberofmoves++;
 		possiblex1 = (int*)realloc(possiblex1,numberofmoves*sizeof(int));
 		possiblex1[numberofmoves-1]=i;
@@ -518,7 +548,7 @@ int Game::CheckforMoves(){
 	    }
 	    if(j<9){
 	      if(!checkifmoveislegal(i,j,i,j+1)){
-		printf("%d %d to %d %d\n",i,j,i,j+1);
+		//printf("%d %d to %d %d\n",i,j,i,j+1);
 		numberofmoves++;
 		possiblex1 = (int*)realloc(possiblex1,numberofmoves*sizeof(int));
 		possiblex1[numberofmoves-1]=i;
@@ -532,7 +562,7 @@ int Game::CheckforMoves(){
 	    }
 	    if(i>0){
 	      if(!checkifmoveislegal(i,j,i-1,j)){
-		printf("%d %d to %d %d\n",i,j,i-1,j);
+		//printf("%d %d to %d %d\n",i,j,i-1,j);
 		numberofmoves++;
 		possiblex1 = (int*)realloc(possiblex1,numberofmoves*sizeof(int));
 		possiblex1[numberofmoves-1]=i;
@@ -546,7 +576,7 @@ int Game::CheckforMoves(){
 	    }
 	    if(j>0){
 	      if(!checkifmoveislegal(i,j,i,j-1)){
-		printf("%d %d to %d %d\n",i,j,i,j-1);
+		//printf("%d %d to %d %d\n",i,j,i,j-1);
 		numberofmoves++;
 		possiblex1 = (int*)realloc(possiblex1,numberofmoves*sizeof(int));
 		possiblex1[numberofmoves-1]=i;
@@ -563,7 +593,7 @@ int Game::CheckforMoves(){
 	    if(i<9){
 	      for(int k=1;k<10-i;k++){
 		if(!checkifmoveislegal(i,j,i+k,j)){
-		  printf("%d %d to %d %d\n",i,j,i+k,j);
+		  //printf("%d %d to %d %d\n",i,j,i+k,j);
 		  numberofmoves++;
 		  possiblex1 = (int*)realloc(possiblex1,numberofmoves*sizeof(int));
 		  possiblex1[numberofmoves-1]=i;
@@ -579,7 +609,7 @@ int Game::CheckforMoves(){
 	    if(j<9){
 	      for(int k=1;k<10-j;k++){
 		if(!checkifmoveislegal(i,j,i,j+k)){
-		  printf("%d %d to %d %d\n",i,j,i,j+k);
+		  //printf("%d %d to %d %d\n",i,j,i,j+k);
 		  numberofmoves++;
 		  possiblex1 = (int*)realloc(possiblex1,numberofmoves*sizeof(int));
 		  possiblex1[numberofmoves-1]=i;
@@ -595,7 +625,7 @@ int Game::CheckforMoves(){
 	    if(i>0){
 	      for(int k=1;k<i+1;k++){
 		if(!checkifmoveislegal(i,j,i-k,j)){
-		  printf("%d %d to %d %d\n",i,j,i-k,j);
+		  //printf("%d %d to %d %d\n",i,j,i-k,j);
 		  numberofmoves++;
 		  possiblex1 = (int*)realloc(possiblex1,numberofmoves*sizeof(int));
 		  possiblex1[numberofmoves-1]=i;
@@ -611,7 +641,7 @@ int Game::CheckforMoves(){
 	    if(j>0){
 	      for(int k=1;k<j+1;k++){
 		if(!checkifmoveislegal(i,j,i,j-k)){
-		  printf("%d %d to %d %d\n",i,j,i,j-k);
+		  //printf("%d %d to %d %d\n",i,j,i,j-k);
 		  numberofmoves++;
 		  possiblex1 = (int*)realloc(possiblex1,numberofmoves*sizeof(int));
 		  possiblex1[numberofmoves-1]=i;
@@ -636,7 +666,7 @@ int Game::CheckforMoves(){
 	  if(BluePiece[i][j]!=2){
 	    if(i<9){
 	      if(!checkifmoveislegal(i,j,i+1,j)){
-		printf("%d %d to %d %d\n",i,j,i+1,j);
+		//printf("%d %d to %d %d\n",i,j,i+1,j);
 		numberofmoves++;
 		possiblex1 = (int*)realloc(possiblex1,numberofmoves*sizeof(int));
 		possiblex1[numberofmoves-1]=i;
@@ -650,7 +680,7 @@ int Game::CheckforMoves(){
 	    }
 	    if(j<9){
 	      if(!checkifmoveislegal(i,j,i,j+1)){
-		printf("%d %d to %d %d\n",i,j,i,j+1);
+		//printf("%d %d to %d %d\n",i,j,i,j+1);
 		numberofmoves++;
 		possiblex1 = (int*)realloc(possiblex1,numberofmoves*sizeof(int));
 		possiblex1[numberofmoves-1]=i;
@@ -664,7 +694,7 @@ int Game::CheckforMoves(){
 	    }
 	    if(i>0){
 	      if(!checkifmoveislegal(i,j,i-1,j)){
-		printf("%d %d to %d %d\n",i,j,i-1,j);
+		//printf("%d %d to %d %d\n",i,j,i-1,j);
 		numberofmoves++;
 		possiblex1 = (int*)realloc(possiblex1,numberofmoves*sizeof(int));
 		possiblex1[numberofmoves-1]=i;
@@ -678,7 +708,7 @@ int Game::CheckforMoves(){
 	    }
 	    if(j>0){
 	      if(!checkifmoveislegal(i,j,i,j-1)){
-		printf("%d %d to %d %d\n",i,j,i,j-1);
+		//printf("%d %d to %d %d\n",i,j,i,j-1);
 		numberofmoves++;
 		possiblex1 = (int*)realloc(possiblex1,numberofmoves*sizeof(int));
 		possiblex1[numberofmoves-1]=i;
@@ -695,7 +725,7 @@ int Game::CheckforMoves(){
 	    if(i<9){
 	      for(int k=1;k<10-i;k++){
 		if(!checkifmoveislegal(i,j,i+k,j)){
-		  printf("%d %d to %d %d\n",i,j,i+k,j);
+		  //printf("%d %d to %d %d\n",i,j,i+k,j);
 		  numberofmoves++;
 		  possiblex1 = (int*)realloc(possiblex1,numberofmoves*sizeof(int));
 		  possiblex1[numberofmoves-1]=i;
@@ -711,7 +741,7 @@ int Game::CheckforMoves(){
 	    if(j<9){
 	      for(int k=1;k<10-j;k++){
 		if(!checkifmoveislegal(i,j,i,j+k)){
-		  printf("%d %d to %d %d\n",i,j,i,j+k);
+		  //printf("%d %d to %d %d\n",i,j,i,j+k);
 		  numberofmoves++;
 		  possiblex1 = (int*)realloc(possiblex1,numberofmoves*sizeof(int));
 		  possiblex1[numberofmoves-1]=i;
@@ -727,7 +757,7 @@ int Game::CheckforMoves(){
 	    if(i>0){
 	      for(int k=1;k<i+1;k++){
 		if(!checkifmoveislegal(i,j,i-k,j)){
-		  printf("%d %d to %d %d\n",i,j,i-k,j);
+		  //printf("%d %d to %d %d\n",i,j,i-k,j);
 		  numberofmoves++;
 		  possiblex1 = (int*)realloc(possiblex1,numberofmoves*sizeof(int));
 		  possiblex1[numberofmoves-1]=i;
@@ -743,7 +773,7 @@ int Game::CheckforMoves(){
 	    if(j>0){
 	      for(int k=1;k<j+1;k++){
 		if(!checkifmoveislegal(i,j,i,j-k)){
-		  printf("%d %d to %d %d\n",i,j,i,j-k);
+		  //printf("%d %d to %d %d\n",i,j,i,j-k);
 		  numberofmoves++;
 		  possiblex1 = (int*)realloc(possiblex1,numberofmoves*sizeof(int));
 		  possiblex1[numberofmoves-1]=i;
@@ -763,17 +793,12 @@ int Game::CheckforMoves(){
   }
   return numberofmoves;
 }
-void Game::Analyzegames(){
+void Game::SaveGame(){//each game is about 80 kb
   FILE * pFileW;
-  pFileW = fopen ("/home/o/Parse/Stratego.text", "w");
-  for(int i=0;i<10;i++){
-    for(int j=0;j<10;j++){
-      fprintf(pFileW,"%d",RedPiece[i][j]);
-      fprintf(pFileW,"%d",BluePiece[i][j]);
-    }
-  }
+  pFileW = fopen ("/home/o/Stratego/Stratego.text", "a");
+  fprintf(pFileW,"%d%d%d%d,",x1,y1,x2,y2);
   fclose (pFileW);
-
+}
   /*  FILE * pFileR;
   pFileR = fopen ("/home/o/Parse/Stratego.text", "r");
   for(int k=0;k<moves;k++){
@@ -785,13 +810,17 @@ void Game::Analyzegames(){
     }
   }
   fclose (pFileR);*/
-}
 int main(){
-  Game *GO= new Game();
-  GO->Initialize();
-  GO->ShowBoard(1,1);
-  GO->SetupBoard(1,0);
-  GO->SetupBoard(0,1);
-  GO->Play();
-  delete GO;
+  int gamess=0;
+  printf("How many games to play?(80kb per game)");
+  scanf("%d",&gamess);
+  for(int g=0;g<gamess;g++){
+    Game *GO= new Game();
+    GO->Initialize();
+    GO->ShowBoard(1,1);
+    GO->SetupBoard(1,0);
+    GO->SetupBoard(0,1);
+    GO->Play();
+    delete GO;
+  }
 }
